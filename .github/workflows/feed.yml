@@ -1,0 +1,29 @@
+name: feed
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: feed
+jobs:
+  feed:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      # file del giro precedente: una fonte che fallisce non li cancella
+      - uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: out
+      - run: python3 feed.py out
+      - name: pubblica (un solo commit su gh-pages, storia non cresce)
+        run: |
+          cd out
+          touch .nojekyll
+          git config user.name tv-feed-bot
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git add -A
+          git commit -q --amend -m feed --date=now
+          git push -f -q origin HEAD:gh-pages

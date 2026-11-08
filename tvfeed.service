@@ -1,0 +1,12 @@
+[Unit]
+Description=tv-feed: un giro di scraping (guide TV, StreamingCommunity, canali)
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=michde
+Environment=TVFEED_TV=192.168.188.80
+ExecStart=/usr/bin/python3 /home/michde/tv-feed/feed.py
+TimeoutStartSec=600
+Nice=10
